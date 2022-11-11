@@ -246,3 +246,62 @@ function addEmployee() {
 });
 };
 
+// Update employee role
+function updateEmployeeRole() {
+  inquirer.prompt([
+      {   
+          type: "input",
+          name: "first_name",
+          message: "Please enter the first name of the employee you want update."
+      },
+      {   
+          type: "number",
+          name: "role_id",
+          message: "Please enter the new role number id associated with the employee you want to update."
+      }
+  ]).then(function (response) {
+          connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [response.role_id, response.first_name], function (err, data) {
+              if (err) throw err;
+              console.log('The new role entered has been added successfully to the database.');
+
+          connection.query(`SELECT * FROM employee`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
+
+// Update employee manager
+function updateEmployeeManager() {
+  inquirer.prompt([
+      {
+          type: "input",
+          name: "first_name",
+          message: "Please enter the first name of the employee you want update"
+      },
+      {
+          type: "number",
+          name: "manager_id",
+          message: "Please enter the new manager's id number associated with the employee you want to update."
+      }
+  ]).then(function (response) {
+          connection.query("UPDATE employee SET manager_id = ? WHERE first_name = ?", [response.manager_id, response.first_name], function (err, data) {
+              if (err) throw err;
+              console.log("The new manager's id entered has been added successfully to the database.");
+
+          connection.query(`SELECT * FROM employee`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
