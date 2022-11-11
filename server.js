@@ -305,3 +305,82 @@ function updateEmployeeManager() {
       })
 });
 };
+
+// Delete department
+function deleteDepartment() {
+  inquirer.prompt([
+      {
+          type: "number",
+          name: "department_id",
+          message: "Please enter the id of the department you want to delete."
+      }
+  ]).then(function (response) {
+          connection.query("DELETE FROM department WHERE id = ?", [response.department_id], function (err, data) {
+              if (err) throw err;
+              console.log("The department entered has been deleted successfully from the database.");
+
+          connection.query(`SELECT * FROM department`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
+
+// Delete role
+function deleteRole() {
+  inquirer.prompt([
+      {
+          type: "number",
+          name: "role_id",
+          message: "Please enter the id of the role you want to delete."
+      }
+  ]).then(function (response) {
+          connection.query("DELETE FROM role WHERE id = ?", [response.role_id], function (err, data) {
+              if (err) throw err;
+              console.log("The role entered has been deleted successfully from the database.");
+
+          connection.query(`SELECT * FROM role`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
+
+// Delete Employee
+function deleteEmployee() {
+  inquirer.prompt([
+      {
+          type: "number",
+          name: "employee_id",
+          message: "Please enter the id of the employee you want to delete."
+      }
+  ]).then(function (response) {
+          connection.query("DELETE FROM employee WHERE id = ?", [response.employee_id], function (err, data) {
+              if (err) throw err;
+              console.log("The employee entered has been deleted successfully from the database.");
+
+          connection.query(`SELECT * FROM employee`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
+
+
+// call to start
+startPrompt();
