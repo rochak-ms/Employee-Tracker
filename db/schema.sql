@@ -1,13 +1,19 @@
-DROP DATABASE IF EXISTS employee_tracker;
+DROP DATABASE IF EXISTS employeesDb;
 
-CREATE DATABASE employee_tracker;
+CREATE DATABASE employeesDb;
 
-USE employee_tracker;
+USE employeesDb;
+
+DROP TABLE IF EXISTS employee;
+
+DROP TABLE IF EXISTS role;
+
+DROP TABLE IF EXISTS department;
 
 CREATE TABLE
     department (
         id INTEGER AUTO_INCREMENT PRIMARY KEY,
-        department_name VARCHAR(30) NOT NULL,
+        department_name VARCHAR(30) NOT NULL
     );
 
 CREATE TABLE
@@ -20,14 +26,14 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    emoloyee (
+    employee (
         id INTEGER AUTO_INCREMENT PRIMARY KEY,
         first_name VARCHAR(30) NOT NULL,
         last_name VARCHAR(30) NOT NULL,
-        role_id INTEGER NOT NULL,
+        role_id INTEGER,
+        manager_id INTEGER NULL,
         CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE
         SET
             NULL,
-            manager_id INTEGER NOT NULL,
-            CONSTRAINT fk_empoyee FOREIGN KEY (manager_id) REFERENCES employee(id)
+            CONSTRAINT fk_employee FOREIGN KEY (manager_id) REFERENCES employee(id)
     );
