@@ -140,3 +140,109 @@ funtion viewAllEmployees() {
     startPrompt();
   });
 };
+
+// Add departments
+function addDepartment() {
+  inquirer.prompt([
+      {   
+          type: "input",
+          name: "department_name",
+          message: "Please enter the name of the department you want to add."
+      }
+  ]).then((answer) => {
+
+  const sql = `INSERT INTO department (department_name)
+              VALUES (?)`;
+  const params = [answer.department_name];
+      connection.query(sql, params, (err, result) => {
+          if (err) throw err;
+          console.log('The new department entered has been added successfully.');
+
+      connection.query(`SELECT * FROM department`, (err, result) => {
+          if (err) {
+              res.status(500).json({ error: err.message })
+              return;
+          }
+          console.table(result);
+          startPrompt();
+      });
+  });
+});
+};
+
+// Add a role
+function addRole() {
+  inquirer.prompt([
+      {
+          type: "input",  
+          name: "title",
+          message: "Please enter the title of role you want to add."
+      },
+      {
+          type: "input",
+          name: "salary",
+          message: "Please enter the salary associated with the role you want to add."
+      },
+      {
+          type: "number",
+          name: "department_id",
+          message: "Please enter the department's id associated with the role you want to add."
+      }
+  ]).then(function (response) {
+          connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [response.title, response.salary, response.department_id], function (err, data) {
+              if (err) throw err;
+              console.log('The new role entered has been added successfully to the database.');
+
+          connection.query(`SELECT * FROM role`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
+
+// Add employees
+function addEmployee() {
+  inquirer.prompt([
+      {
+          type: "input",
+          name: "first_name",
+          message: "Please enter the first name of the employee you want to add."
+      },
+      {
+          type: "input",
+          name: "last_name",
+          message: "Please enter the last name of the employee you want to add."
+      },
+      { 
+          type: "number",
+          name: "role_id",
+          message: "Please enter the role id number associated with the employee you want to add."
+      },
+      {
+          name: "manager_id",
+          type: "number",
+          message: "Please enter the manager's id number associated with the employee you want to add."
+      }
+
+  ]).then(function (response) {
+          connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [response.first_name, response.last_name, response.role_id, response.manager_id], function (err, data) {
+              if (err) throw err;
+              console.log('The new employee entered has been added successfully to the database.');
+
+          connection.query(`SELECT * FROM employee`, (err, result) => {
+              if (err) {
+                  res.status(500).json({ error: err.message })
+                  startPrompt();
+              }
+              console.table(result);
+              startPrompt();
+          });
+      })
+});
+};
+
