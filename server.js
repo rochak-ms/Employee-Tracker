@@ -554,5 +554,28 @@ const deleteEmployee = () => {
   });
 };
 
+// view department budget
+const viewBudget = () => {
+  console.log(
+    chalk.greenBright.bold("------------------------------------------")
+  );
+  console.log(
+    chalk.greenBright.bold("       Showing budget by Department       ")
+  );
+  console.log(
+    chalk.greenBright.bold("------------------------------------------")
+  );
+  const budSql = `SELECT department_id AS id, 
+               department_name AS department,
+               SUM(salary) AS budget
+               FROM  role  
+               JOIN department ON role.department_id = department.id GROUP BY department_id`;
+  connection.query(budSql, (err, result) => {
+    if (err) throw err;
+    console.table(result);
+    startPrompt();
+  });
+};
+
 // call to start
 startPrompt();
