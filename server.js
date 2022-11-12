@@ -6,7 +6,8 @@ const express = require("express");
 // importing console.table
 const cTable = require("console.table");
 // importing chalk
-//const Chalk = require("chalk");
+const chalk = require("chalk");
+const { listenerCount } = require("./config/connection");
 // importing figlet
 // const figlet = require("figlet");
 //importing mysql2
@@ -36,7 +37,7 @@ function startPrompt() {
     .prompt({
       type: "list",
       name: "menu",
-      message: "What would you like to do?",
+      message: chalk.green.bold("What would you like to do?"),
       choices: [
         "View All Departments",
         "View All Roles",
@@ -79,7 +80,7 @@ function startPrompt() {
           updateEmployeeManager();
           break;
         case "Delete a Department":
-          deleteDeparment();
+          deleteDepartment();
           break;
         case "Delete a Role":
           deleteRole();
@@ -88,6 +89,7 @@ function startPrompt() {
           deleteEmployee();
           break;
         case "Exit Menu":
+          console.log(chalk.blue.bold("See you Next time. Bye Bye!"));
           connection.end();
           break;
       }
@@ -96,6 +98,9 @@ function startPrompt() {
 
 // function to view all departments
 function viewAllDepartments() {
+  console.log(chalk.greenBright.bold("------------------------------------"));
+  console.log(chalk.greenBright.bold("      Showing all departments      "));
+  console.log(chalk.greenBright.bold("------------------------------------"));
   const sql = `SELECT * FROM department`;
   connection.query(sql, (err, result) => {
     if (err) {
@@ -109,6 +114,9 @@ function viewAllDepartments() {
 
 // function to view all roles
 function viewAllRoles() {
+  console.log(chalk.greenBright.bold("------------------------------------"));
+  console.log(chalk.greenBright.bold("         Showing all Roles          "));
+  console.log(chalk.greenBright.bold("------------------------------------"));
   const sql = `SELECT * FROM role`;
   connection.query(sql, (err, result) => {
     if (err) {
@@ -122,6 +130,9 @@ function viewAllRoles() {
 
 // function to view all employees
 function viewAllEmployees() {
+  console.log(chalk.greenBright.bold("------------------------------------"));
+  console.log(chalk.greenBright.bold("       Showing all Employees        "));
+  console.log(chalk.greenBright.bold("------------------------------------"));
   const sql = `SELECT employee.id,
                 employee.first_name,
                 employee.last_name,
@@ -148,7 +159,9 @@ function addDepartment() {
       {
         type: "input",
         name: "department_name",
-        message: "Please enter the name of the department you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the name of the department you want to add."
+        ),
       },
     ])
     .then((answer) => {
@@ -157,7 +170,11 @@ function addDepartment() {
       const params = [answer.department_name];
       connection.query(sql, params, (err, result) => {
         if (err) throw err;
-        console.log("The new department entered has been added successfully.");
+        console.log(
+          chalk.green.bold(
+            "The new department entered has been added successfully."
+          )
+        );
 
         connection.query(`SELECT * FROM department`, (err, result) => {
           if (err) {
@@ -178,19 +195,23 @@ function addRole() {
       {
         type: "input",
         name: "title",
-        message: "Please enter the title of role you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the title of role you want to add."
+        ),
       },
       {
         type: "input",
         name: "salary",
-        message:
-          "Please enter the salary associated with the role you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the salary associated with the role you want to add."
+        ),
       },
       {
         type: "number",
         name: "department_id",
-        message:
-          "Please enter the department's id associated with the role you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the department's id associated with the role you want to add."
+        ),
       },
     ])
     .then(function (response) {
@@ -200,7 +221,9 @@ function addRole() {
         function (err, data) {
           if (err) throw err;
           console.log(
-            "The new role entered has been added successfully to the database."
+            chalk.green.bold(
+              "The new role entered has been added successfully to the database."
+            )
           );
 
           connection.query(`SELECT * FROM role`, (err, result) => {
@@ -223,24 +246,30 @@ function addEmployee() {
       {
         type: "input",
         name: "first_name",
-        message: "Please enter the first name of the employee you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the first name of the employee you want to add."
+        ),
       },
       {
         type: "input",
         name: "last_name",
-        message: "Please enter the last name of the employee you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the last name of the employee you want to add."
+        ),
       },
       {
         type: "number",
         name: "role_id",
-        message:
-          "Please enter the role id number associated with the employee you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the role id number associated with the employee you want to add."
+        ),
       },
       {
         name: "manager_id",
         type: "number",
-        message:
-          "Please enter the manager's id number associated with the employee you want to add.",
+        message: chalk.blue.bold(
+          "Please enter the manager's id number associated with the employee you want to add."
+        ),
       },
     ])
     .then(function (response) {
@@ -255,7 +284,9 @@ function addEmployee() {
         function (err, data) {
           if (err) throw err;
           console.log(
-            "The new employee entered has been added successfully to the database."
+            chalk.green.bold(
+              "The new employee entered has been added successfully to the database."
+            )
           );
 
           connection.query(`SELECT * FROM employee`, (err, result) => {
@@ -278,13 +309,16 @@ function updateEmployeeRole() {
       {
         type: "input",
         name: "first_name",
-        message: "Please enter the first name of the employee you want update.",
+        message: chalk.blue.bold(
+          "Please enter the first name of the employee you want update."
+        ),
       },
       {
         type: "number",
         name: "role_id",
-        message:
-          "Please enter the new role number id associated with the employee you want to update.",
+        message: chalk.blue.bold(
+          "Please enter the new role number id associated with the employee you want to update."
+        ),
       },
     ])
     .then(function (response) {
@@ -294,7 +328,9 @@ function updateEmployeeRole() {
         function (err, data) {
           if (err) throw err;
           console.log(
-            "The new role entered has been added successfully to the database."
+            chalk.green.bold(
+              "The new role entered has been added successfully."
+            )
           );
 
           connection.query(`SELECT * FROM employee`, (err, result) => {
@@ -317,13 +353,16 @@ function updateEmployeeManager() {
       {
         type: "input",
         name: "first_name",
-        message: "Please enter the first name of the employee you want update",
+        message: chalk.blue.bold(
+          "Please enter the first name of the employee you want update"
+        ),
       },
       {
         type: "number",
         name: "manager_id",
-        message:
-          "Please enter the new manager's id number associated with the employee you want to update.",
+        message: chalk.blue.bold(
+          "Please enter the new manager's id number associated with the employee you want to update."
+        ),
       },
     ])
     .then(function (response) {
@@ -333,7 +372,9 @@ function updateEmployeeManager() {
         function (err, data) {
           if (err) throw err;
           console.log(
-            "The new manager's id entered has been added successfully to the database."
+            chalk.green.bold(
+              "The new manager's id entered has been added successfully."
+            )
           );
 
           connection.query(`SELECT * FROM employee`, (err, result) => {
@@ -350,37 +391,51 @@ function updateEmployeeManager() {
 }
 
 // Delete department
-function deleteDepartment() {
-  inquirer
-    .prompt([
-      {
-        type: "number",
-        name: "department_id",
-        message: "Please enter the id of the department you want to delete.",
-      },
-    ])
-    .then(function (response) {
-      connection.query(
-        "DELETE FROM department WHERE id = ?",
-        [response.department_id],
-        function (err, data) {
-          if (err) throw err;
-          console.log(
-            "The department entered has been deleted successfully from the database."
-          );
+const deleteDepartment = () => {
+  const sql = `SELECT * FROM department`;
+  connection.query(sql, (err, data) => {
+    if (err) throw err;
+    const department_id = data.map(({ name, id }) => ({
+      name: name,
+      value: id,
+    }));
+    inquirer
+      .prompt([
+        {
+          // type: "number",
+          type: "list",
+          name: "department_id",
+          message: chalk.blue.bold(
+            "Please enter the id of the department you want to delete."
+          ),
+          choices: department_id,
+        },
+      ])
+      .then((response) => {
+        const department_id = connection.query(
+          "DELETE FROM department WHERE id = ?",
+          [response.department_id],
+          (err, _data) => {
+            if (err) throw err;
+            console.log(
+              chalk.red.bold(
+                "The department entered has been deleted successfully."
+              )
+            );
 
-          connection.query(`SELECT * FROM department`, (err, result) => {
-            if (err) {
-              res.status(500).json({ error: err.message });
+            connection.query(`SELECT * FROM department`, (err, result) => {
+              if (err) {
+                res.status(500).json({ error: err.message });
+                startPrompt();
+              }
+              console.table(result);
               startPrompt();
-            }
-            console.table(result);
-            startPrompt();
-          });
-        }
-      );
-    });
-}
+            });
+          }
+        );
+      });
+  });
+};
 
 // Delete role
 function deleteRole() {
@@ -389,7 +444,9 @@ function deleteRole() {
       {
         type: "number",
         name: "role_id",
-        message: "Please enter the id of the role you want to delete.",
+        message: chalk.blue.bold(
+          "Please enter the id of the role you want to delete."
+        ),
       },
     ])
     .then(function (response) {
@@ -399,7 +456,7 @@ function deleteRole() {
         function (err, data) {
           if (err) throw err;
           console.log(
-            "The role entered has been deleted successfully from the database."
+            chalk.red.bold("The role entered has been deleted successfully.")
           );
 
           connection.query(`SELECT * FROM role`, (err, result) => {
@@ -422,7 +479,9 @@ function deleteEmployee() {
       {
         type: "number",
         name: "employee_id",
-        message: "Please enter the id of the employee you want to delete.",
+        message: chalk.blue.bold(
+          "Please enter the id of the employee you want to delete."
+        ),
       },
     ])
     .then(function (response) {
@@ -432,7 +491,9 @@ function deleteEmployee() {
         function (err, data) {
           if (err) throw err;
           console.log(
-            "The employee entered has been deleted successfully from the database."
+            chalk.red.bold(
+              "The employee entered has been deleted successfully."
+            )
           );
 
           connection.query(`SELECT * FROM employee`, (err, result) => {
