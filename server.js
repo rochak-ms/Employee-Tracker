@@ -47,7 +47,7 @@ const startPrompt = () => {
         "Delete a Department",
         "Delete a Role",
         "Delete an Employee",
-        "View department budgets",
+        "View Department Budgets",
         "Exit Menu",
       ],
     })
@@ -68,7 +68,7 @@ const startPrompt = () => {
         case "Add a Role":
           addRole();
           break;
-        case "Add an Employee":
+        case "Add a Employee":
           addEmployee();
           break;
         case "Update an Employee Role":
@@ -93,7 +93,7 @@ const startPrompt = () => {
           deleteEmployee();
           break;
         case "View Department Budgets":
-          viewBudget();
+          viewDepBudget();
           break;
         case "Exit Menu":
           console.log(chalk.blue.bold("See you Next time. Bye Bye!"));
@@ -178,9 +178,15 @@ const addDepartment = () => {
       connection.query(sql, params, (err, result) => {
         if (err) throw err;
         console.log(
+          "----------------------------------------------------------"
+        );
+        console.log(
           chalk.green.bold(
-            "The new department entered has been added successfully."
+            "Added " + answer.department_name + " department to the database."
           )
+        );
+        console.log(
+          "----------------------------------------------------------"
         );
 
         connection.query(`SELECT * FROM department`, (err, result) => {
@@ -197,53 +203,77 @@ const addDepartment = () => {
 
 // Add a role
 const addRole = () => {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "title",
-        message: chalk.blue.bold(
-          "Please enter the title of role you want to add."
-        ),
-      },
-      {
-        type: "input",
-        name: "salary",
-        message: chalk.blue.bold(
-          "Please enter the salary associated with the role you want to add."
-        ),
-      },
-      {
-        type: "number",
-        name: "department_id",
-        message: chalk.blue.bold(
-          "Please enter the department's id associated with the role you want to add."
-        ),
-      },
-    ])
-    .then((response) => {
-      connection.query(
-        "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)",
-        [response.title, response.salary, response.department_id],
-        function (err, data) {
-          if (err) throw err;
-          console.log(
-            chalk.green.bold(
-              "The new role entered has been added successfully to the database."
-            )
-          );
-
-          connection.query(`SELECT * FROM role`, (err, result) => {
-            if (err) {
-              res.status(500).json({ error: err.message });
-              startPrompt();
-            }
-            console.table(result);
-            startPrompt();
-          });
-        }
-      );
+  const sql = "SELECT * FROM department";
+  connection.query(sql, (err, response) => {
+    if (err) throw err;
+    // Logic to add new dept for the new role...
+    let deptNamesArray = [];
+    response.forEach((department) => {
+      deptNamesArray.push(department.department_name);
     });
+    deptNamesArray.push("Create Department");
+    inquirer
+      .prompt([
+        {
+          name: "departmentName",
+          type: "list",
+          message: chalk.blue.bold(
+            "Which department will you add this role to?"
+          ),
+          choices: deptNamesArray,
+        },
+      ])
+      .then((response) => {
+        if (response.departmentName === "Create Department") {
+          this.addDepartment();
+        } else {
+          addRoleResume(response);
+        }
+      });
+
+    const addRoleResume = (departmentData) => {
+      inquirer
+        .prompt([
+          {
+            name: "newRole",
+            type: "input",
+            message: chalk.blue.bold("What is the name of your new role?"),
+          },
+          {
+            name: "salary",
+            type: "input",
+            message: chalk.blue.bold("What is the salary of this new role?"),
+          },
+        ])
+        .then((answer) => {
+          let createdRole = answer.newRole;
+          let departmentId;
+
+          response.forEach((department) => {
+            if (departmentData.departmentName === department.department_name) {
+              departmentId = department.id;
+            }
+          });
+
+          let sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+          let ans = [createdRole, answer.salary, departmentId];
+
+          connection.query(sql, ans, (error) => {
+            if (error) throw error;
+            console.log(
+              "------------------------------------------------------------------"
+            );
+            console.log(
+              chalk.green.bold("Added " + createdRole + " role to the database")
+            );
+            console.log(
+              "------------------------------------------------------------------"
+            );
+            viewAllRoles();
+          });
+        });
+    };
+  });
 };
 
 // Add employees
@@ -252,60 +282,77 @@ const addEmployee = () => {
     .prompt([
       {
         type: "input",
-        name: "first_name",
-        message: chalk.blue.bold(
-          "Please enter the first name of the employee you want to add."
-        ),
+        name: "firstName",
+        message: chalk.blue.bold("What is the employee's first name?"),
       },
       {
         type: "input",
-        name: "last_name",
-        message: chalk.blue.bold(
-          "Please enter the last name of the employee you want to add."
-        ),
-      },
-      {
-        type: "number",
-        name: "role_id",
-        message: chalk.blue.bold(
-          "Please enter the role id number associated with the employee you want to add."
-        ),
-      },
-      {
-        name: "manager_id",
-        type: "number",
-        message: chalk.blue.bold(
-          "Please enter the manager's id number associated with the employee you want to add."
-        ),
+        name: "lastName",
+        message: chalk.blue.bold("What is the employee's last name?"),
       },
     ])
     .then((response) => {
-      connection.query(
-        "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
-        [
-          response.first_name,
-          response.last_name,
-          response.role_id,
-          response.manager_id,
-        ],
-        (err, data) => {
-          if (err) throw err;
-          console.log(
-            chalk.green.bold(
-              "The new employee entered has been added successfully to the database."
-            )
-          );
-
-          connection.query(`SELECT * FROM employee`, (err, result) => {
-            if (err) {
-              res.status(500).json({ error: err.message });
-              startPrompt();
-            }
-            console.table(result);
-            startPrompt();
+      const ans = [response.firstName, response.lastName];
+      const roleSql = `SELECT role.id, role.title FROM role`;
+      connection.query(roleSql, (error, data) => {
+        if (error) throw error;
+        const roles = data.map(({ id, title }) => ({ name: title, value: id }));
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "role",
+              message: chalk.blue.bold("What is the employee's role?"),
+              choices: roles,
+            },
+          ])
+          .then((roleChoice) => {
+            const role = roleChoice.role;
+            ans.push(role);
+            const managerSql = `SELECT * FROM employee`;
+            connection.query(managerSql, (error, data) => {
+              if (error) throw error;
+              const managers = data.map(({ id, first_name, last_name }) => ({
+                name: first_name + " " + last_name,
+                value: id,
+              }));
+              inquirer
+                .prompt([
+                  {
+                    type: "list",
+                    name: "manager",
+                    message: chalk.blue.bold("Who is the employee's manager?"),
+                    choices: managers,
+                  },
+                ])
+                .then((managerChoice) => {
+                  const manager = managerChoice.manager;
+                  ans.push(manager);
+                  const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                                  VALUES (?, ?, ?, ?)`;
+                  connection.query(sql, ans, (error) => {
+                    if (error) throw error;
+                    console.log(
+                      "------------------------------------------------------------------"
+                    );
+                    console.log(
+                      chalk.green.bold(
+                        "Added new Employee, " +
+                          response.firstName +
+                          " " +
+                          response.lastName +
+                          " to the database."
+                      )
+                    );
+                    console.log(
+                      "------------------------------------------------------------------"
+                    );
+                    viewAllEmployees();
+                  });
+                });
+            });
           });
-        }
-      );
+      });
     });
 };
 
@@ -458,14 +505,17 @@ const deleteDepartment = () => {
   connection.query(deptSql, (err, data) => {
     if (err) throw err;
 
-    const dept = data.map(({ name, id }) => ({ name: name, value: id }));
+    const dept = data.map(({ department_name, id }) => ({
+      name: department_name,
+      value: id,
+    }));
 
     inquirer
       .prompt([
         {
           type: "list",
           name: "dept",
-          message: "What department do you want to delete?",
+          message: chalk.blue.bold("What department do you want to delete?"),
           choices: dept,
         },
       ])
@@ -475,7 +525,11 @@ const deleteDepartment = () => {
 
         connection.query(sql, dept, (err, result) => {
           if (err) throw err;
-          console.log("The selected department had been deleted successfully!");
+          console.log(
+            chalk.red.bold(
+              "The selected department had been deleted successfully!"
+            )
+          );
           viewAllDepartments();
         });
       });
@@ -555,7 +609,7 @@ const deleteEmployee = () => {
 };
 
 // view department budget
-const viewBudget = () => {
+const viewDepBudget = () => {
   console.log(
     chalk.greenBright.bold("------------------------------------------")
   );
@@ -565,16 +619,19 @@ const viewBudget = () => {
   console.log(
     chalk.greenBright.bold("------------------------------------------")
   );
-  const budSql = `SELECT department_id AS id, 
-               department_name AS department,
-               SUM(salary) AS budget
-               FROM  role  
-               JOIN department ON role.department_id = department.id GROUP BY department_id`;
-  connection.query(budSql, (err, result) => {
-    if (err) throw err;
-    console.table(result);
-    startPrompt();
-  });
+
+  connection.query(
+    `SELECT department_id AS id, 
+    department_name AS department,
+    SUM(salary) AS budget
+FROM role  
+JOIN department ON role.department_id = department.id GROUP BY department_id`,
+    (err, result) => {
+      if (err) throw err;
+      console.table(result);
+      startPrompt();
+    }
+  );
 };
 
 // call to start

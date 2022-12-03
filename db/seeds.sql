@@ -17,4 +17,4 @@ INSERT INTO
         role_id,
         manager_id
     )
-VALUES ('Kate', 'Lee', 1, 1), ('John', 'Morgan', 1, 2), ('Tom', 'Hardy', 2, 2), ('Jimmy', 'Logan', 3, 1), ('Courtney', 'Woolf', 4, 3), ('Emelie', 'Hudson', 4, 4);
+VALUES ('Kate', 'Lee', 1, 1), ('John', 'Morgan', 2, 2), ('Tom', 'Hardy', 2, 2), ('Jimmy', 'Logan', 3, 1), ('Courtney', 'Woolf', 4, 3), ('Emelie', 'Hudson', 4, 4);
