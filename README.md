@@ -4,8 +4,6 @@
 
 ## Description
 
-#
-
 This application is a content management systems (CMS). A command-line application to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 
 ## Output:
@@ -16,8 +14,6 @@ This application is a content management systems (CMS). A command-line applicati
 
 ## Table of Contents
 
-#
-
 - [Installation](#installation)
 - [Usage](#usage)
 - [Links](#links)
@@ -27,8 +23,6 @@ This application is a content management systems (CMS). A command-line applicati
 - [Questions](#questions)
 
 ## Installation
-
-#
 
 Below is the instruction for installation of this project.
 
@@ -48,8 +42,6 @@ After downloading the dependencies. Follow the MySQL instructions to create your
 
 ## Usage
 
-#
-
 To run the application, Run `node server.js` or `npm start` in your terminal to launch the application.
 
 ### The following animation demonstrates the application functionality
@@ -62,8 +54,6 @@ To run the application, Run `node server.js` or `npm start` in your terminal to 
 
 ## Links
 
-#
-
 Below is the link related to the Project:
 
 - GitHub repository - [Click Here](https://github.com/rochak-ms/Employee-Tracker.git)
@@ -71,15 +61,11 @@ Below is the link related to the Project:
 
 ## License
 
-#
-
 ![License badge](https://shields.io/badge/license-MIT-blue.svg)
 
 Please visit [Here](https://mit-license.org/) for detail information.
 
 ## Contributing
-
-#
 
 Please contribute to this project. Submit a bugs and feature request in issues section of the project repository in GitHub.
 
@@ -90,7 +76,5 @@ none
 ```
 
 ## Questions
-
-#
 
 If you have any questions about the project, please contact me at rochak.ms@gmail.com. Or you can find me [Here](https://github.com/rochak-ms) on GitHub.
